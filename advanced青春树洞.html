@@ -1,0 +1,698 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+  <title>青春树洞 · 有光版</title>
+  <!-- 引入 html2canvas 用于生成卡片 -->
+  <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js">
+  </script>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      background: linear-gradient(160deg, #f9e7e7 0%, #e3f0fa 100%);
+      font-family: "PingFang SC", "Noto Sans", "Helvetica Neue", sans-serif;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+      position: relative;
+      overflow-x: hidden;
+    }
+    /* 萤火虫飘浮动画 */
+    .firefly-container {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 0;
+    }
+    .firefly {
+      position: absolute;
+      width: 4px;
+      height: 4px;
+      background: #ffe9a7;
+      border-radius: 50%;
+      box-shadow: 0 0 12px 4px #ffdd99;
+      animation: floatFirefly 8s infinite ease-in-out;
+      opacity: 0.6;
+    }
+    @keyframes floatFirefly {
+      0% { transform: translate(0, 0) scale(1); opacity: 0.3; }
+      25% { transform: translate(30px, -40px) scale(1.3); opacity: 0.8; }
+      50% { transform: translate(-20px, -80px) scale(0.9); opacity: 0.5; }
+      75% { transform: translate(15px, -30px) scale(1.2); opacity: 0.7; }
+      100% { transform: translate(0, 0) scale(1); opacity: 0.3; }
+    }
+    .tree-container {
+      max-width: 480px;
+      width: 100%;
+      background: rgba(255, 250, 245, 0.82);
+      backdrop-filter: blur(20px);
+      border-radius: 40px;
+      box-shadow: 0 20px 40px rgba(120, 80, 100, 0.15);
+      padding: 30px 24px 28px;
+      position: relative;
+      z-index: 1;
+      transition: all 0.3s ease;
+    }
+    .daily-quote {
+      font-size: 14px;
+      color: #8e7a7a;
+      background: rgba(255,245,235,0.7);
+      padding: 8px 16px;
+      border-radius: 20px;
+      margin-bottom: 18px;
+      text-align: center;
+      font-style: italic;
+      backdrop-filter: blur(8px);
+      border: 1px solid #f0dfd4;
+    }
+    h1 {
+      font-size: 28px;
+      font-weight: 600;
+      color: #5b4a4a;
+      margin-bottom: 6px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      letter-spacing: 1px;
+    }
+    .subtitle {
+      font-size: 14px;
+      color: #8b7b7b;
+      margin-bottom: 10px;
+      font-style: italic;
+      border-left: 4px solid #d4a5a5;
+      padding-left: 14px;
+    }
+    .stats {
+      font-size: 12px;
+      color: #b19a9a;
+      text-align: right;
+      margin-bottom: 18px;
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      gap: 6px;
+    }
+    .form-group {
+      margin-bottom: 18px;
+    }
+    label {
+      font-size: 15px;
+      color: #4e4040;
+      font-weight: 500;
+      display: block;
+      margin-bottom: 6px;
+      letter-spacing: 0.3px;
+    }
+    select,
+    textarea,
+    button {
+      width: 100%;
+      border-radius: 20px;
+      border: 1px solid #ddd0c8;
+      background: #fffbf7;
+      padding: 12px 16px;
+      font-size: 15px;
+      outline: none;
+      transition: all 0.2s ease;
+      color: #3e3232;
+      font-family: inherit;
+    }
+    select {
+      appearance: none;
+      background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="%23997d7d" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>');
+      background-repeat: no-repeat;
+      background-position: right 16px center;
+      background-size: 18px;
+    }
+    textarea {
+      resize: vertical;
+      min-height: 90px;
+      line-height: 1.5;
+    }
+    textarea:focus,
+    select:focus {
+      border-color: #cba0a0;
+      box-shadow: 0 0 0 3px rgba(203, 160, 160, 0.2);
+      background: #fffdfa;
+    }
+    button {
+      background: #b58b8b;
+      border: none;
+      color: white;
+      font-weight: 600;
+      font-size: 16px;
+      letter-spacing: 1.5px;
+      cursor: pointer;
+      margin-top: 8px;
+      box-shadow: 0 6px 14px rgba(181, 139, 139, 0.4);
+      transition: background 0.2s, transform 0.1s;
+      padding: 14px;
+      border-radius: 30px;
+    }
+    button:hover {
+      background: #a47575;
+    }
+    button:active {
+      transform: scale(0.97);
+    }
+    .button-row {
+      display: flex;
+      gap: 10px;
+      margin-top: 8px;
+    }
+    .button-row button {
+      flex: 1;
+      margin-top: 0;
+      font-size: 14px;
+      padding: 10px;
+    }
+    .secondary-btn {
+      background: #d9c2ba;
+      box-shadow: 0 4px 10px rgba(180, 140, 130, 0.3);
+    }
+    .response-card {
+      margin-top: 24px;
+      background: #fff7f2;
+      border-radius: 26px;
+      padding: 20px 18px;
+      border: 1px solid #ecd9d0;
+      box-shadow: 0 8px 18px rgba(160, 120, 120, 0.1);
+      display: none;
+      animation: fadeUp 0.5s ease;
+      position: relative;
+    }
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(16px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .response-label {
+      font-size: 13px;
+      text-transform: uppercase;
+      color: #b18579;
+      letter-spacing: 1px;
+      margin-bottom: 8px;
+    }
+    .response-text {
+      font-size: 17px;
+      color: #4d3b3b;
+      line-height: 1.6;
+      font-weight: 500;
+      word-break: break-word;
+      min-height: 30px;
+    }
+    .card-preview {
+      display: none;
+      margin-top: 18px;
+      text-align: center;
+    }
+    .card-preview img {
+      max-width: 100%;
+      border-radius: 20px;
+      box-shadow: 0 8px 18px rgba(0,0,0,0.1);
+    }
+    .glimmer-wall {
+      margin-top: 28px;
+      border-top: 1px dashed #dfcec5;
+      padding-top: 20px;
+    }
+    .glimmer-title {
+      font-size: 14px;
+      color: #7f6e6e;
+      margin-bottom: 14px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      justify-content: space-between;
+    }
+    .glimmer-list {
+      max-height: 250px;
+      overflow-y: auto;
+      padding-right: 6px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .glimmer-item {
+      background: #fffdf9;
+      border-radius: 18px;
+      padding: 12px 14px;
+      border: 1px solid #f0e1da;
+      font-size: 14px;
+      color: #5a4949;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.02);
+      word-break: break-word;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .glimmer-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .category-badge {
+      font-size: 11px;
+      background: #f2e2da;
+      color: #8e6e6e;
+      padding: 2px 10px;
+      border-radius: 12px;
+      display: inline-block;
+    }
+    .star-btn {
+      background: none;
+      border: none;
+      font-size: 20px;
+      cursor: pointer;
+      color: #d4c0b0;
+      padding: 0 4px;
+      line-height: 1;
+      transition: transform 0.2s;
+      box-shadow: none;
+    }
+    .star-btn.lit {
+      color: #f9ca7f;
+      text-shadow: 0 0 6px #ffbb4d;
+    }
+    .star-btn:hover {
+      transform: scale(1.2);
+    }
+    .empty-note {
+      color: #bfaeae;
+      font-style: italic;
+      text-align: center;
+      padding: 16px;
+    }
+    .undo-link {
+      font-size: 12px;
+      color: #b58b8b;
+      cursor: pointer;
+      text-align: right;
+      margin-top: 4px;
+      text-decoration: underline;
+      opacity: 0.8;
+    }
+    footer {
+      margin-top: 18px;
+      font-size: 11px;
+      color: #bbaaac;
+      text-align: center;
+    }
+    /* 隐藏的画布卡片用于截图 */
+    #cardCanvas {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      width: 320px;
+      background: #fffaf2;
+      border-radius: 28px;
+      padding: 24px;
+      font-family: "PingFang SC", sans-serif;
+      box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+    }
+    #cardCanvas .card-quote {
+      font-size: 20px;
+      color: #5b4a4a;
+      line-height: 1.5;
+      margin: 12px 0 18px;
+    }
+    #cardCanvas .card-footer {
+      font-size: 12px;
+      color: #b58b8b;
+      text-align: right;
+      border-top: 1px dashed #ecd9d0;
+      padding-top: 12px;
+    }
+  </style>
+</head>
+<body>
+<!-- 萤火虫背景 -->
+<div class="firefly-container" id="fireflyContainer"></div>
+
+<div class="tree-container">
+  <!-- 每日一句 -->
+  <div class="daily-quote" id="dailyQuote"></div>
+
+  <h1>🌳 青春树洞</h1>
+  <div class="subtitle">说给树听，光会回答你</div>
+  <div class="stats">
+    <span>🕯️ 已倾听</span>
+    <span id="listenCount">0</span>
+    <span>次</span>
+  </div>
+
+  <div class="form-group">
+    <label>📌 你的困惑类型</label>
+    <select id="categorySelect">
+      <option value="employment">就业与职场</option>
+      <option value="furtherstudy">升学与考研</option>
+      <option value="campus">校园生活</option>
+      <option value="relationship">人际关系</option>
+      <option value="others">其他心事</option>
+    </select>
+  </div>
+
+  <div class="form-group">
+    <label>✍️ 写下你想说的（匿名）</label>
+    <textarea id="confessionInput" placeholder="例如：投了很多简历没回音，是不是我不够好..."></textarea>
+  </div>
+
+  <button id="submitBtn">✨ 投递到树洞</button>
+  <div class="undo-link" id="undoLink" style="display:none;">↩️ 撤回刚才的投递</div>
+
+  <!-- 回复卡片 -->
+  <div id="responseCard" class="response-card">
+    <div class="response-label">🌿 树洞的回音</div>
+    <div id="responseMessage" class="response-text"></div>
+    <div style="margin-top:16px; display:flex; gap:10px;">
+      <button id="cardBtn" class="secondary-btn" style="flex:1;">📸 生成心情卡片</button>
+      <button id="closeResponseBtn" class="secondary-btn" style="flex:1;">✕ 关闭</button>
+    </div>
+    <div class="card-preview" id="cardPreview"></div>
+  </div>
+
+  <!-- 微光墙 -->
+  <div class="glimmer-wall">
+    <div class="glimmer-title">
+      <span>🕯️ 树洞微光</span>
+      <span style="font-weight:400; font-size:12px;">（点星星为彼此加油）</span>
+    </div>
+    <div id="glimmerList" class="glimmer-list">
+      <div class="empty-note">暂时还没有微光，来做第一束光吧。</div>
+    </div>
+  </div>
+  <footer>🌱 你说的话，都被温柔接住了</footer>
+</div>
+
+<!-- 隐藏卡片用于截图 -->
+<div id="cardCanvas">
+  <div style="font-size:16px; color:#b18579;">✨ 青春树洞 · 给你的回音</div>
+  <div class="card-quote" id="cardText"></div>
+  <div class="card-footer">—— 树洞里的光</div>
+</div>
+
+<script>
+  (function() {
+    // ---------- 萤火虫生成 ----------
+    function createFireflies(count = 15) {
+      const container = document.getElementById('fireflyContainer');
+      for (let i = 0; i < count; i++) {
+        const firefly = document.createElement('div');
+        firefly.className = 'firefly';
+        const left = Math.random() * 100;
+        const top = Math.random() * 100;
+        const delay = Math.random() * 6;
+        const duration = 6 + Math.random() * 10;
+        firefly.style.left = left + '%';
+        firefly.style.top = top + '%';
+        firefly.style.animationDelay = delay + 's';
+        firefly.style.animationDuration = duration + 's';
+        container.appendChild(firefly);
+      }
+    }
+    createFireflies(18);
+
+    // ---------- 每日一句 ----------
+    const quotes = [
+      "“你已经在发光了，只是自己还没看到。”",
+      "“今天的不开心就到此为止，明天依旧光芒万丈。”",
+      "“慢慢来，谁不是翻山越岭去相爱。”",
+      "“世界在催你长大，树洞只想你快乐。”",
+      "“即使裂缝，也是光照进来的地方。”",
+      "“你的存在，本身就是一种美好。”",
+      "“累了就歇一歇，树洞永远等你。”"
+    ];
+    const dailyQuote = document.getElementById('dailyQuote');
+    const randomQuote = quotes[Math.floor(Math.random() * quotes.length)];
+    dailyQuote.textContent = randomQuote;
+
+    // ---------- 温暖解答库 ----------
+    const answers = {
+      employment: [
+        "没收到回音不代表你不够好，市场有时就是慢一些。今天先为自己做一顿喜欢的饭，你已经很努力了。",
+        "找工作像等花开，每份投递都是种子。利用这段间隙打磨一个小技能，信心会慢慢回来。",
+        "被拒绝是筛选匹配，不是否定价值。整理一下简历里你最骄傲的项目，把它放在最显眼的位置。",
+        "迷茫的时候，做一件能掌控的小事：去操场走三圈，然后修改一句自我介绍。",
+        "你不是一个人在焦虑。很多offer都在路上，只是红绿灯有点久。",
+        "就业是双向选择，你也需要看看那份工作是否真的适合你。先爱自己的节奏。"
+      ],
+      furtherstudy: [
+        "考研像在黑屋子里洗衣服，你不知道洗干净没有，只能一遍遍搓。坚持到开灯那天，你会看见光亮。",
+        "升学不是唯一的路，但如果你选择了，就相信那个愿意坐在书桌前的自己。",
+        "复习累了就睡十分钟，醒来脑子会重启。效率比时长更重要哦。",
+        "如果今天实在看不进书，允许自己休息半天。愧疚感是最大的内耗。",
+        "那些背了又忘的知识点，最终都会在考场上悄悄出现。相信积累的力量。",
+        "你为未来拼搏的样子，本身就已经很耀眼了。"
+      ],
+      campus: [
+        "宿舍关系有时像天气，允许偶尔阴天。保持真诚的同时，也给自己留一点边界。",
+        "小组作业不愉快？试试把情绪写成纸条再撕掉。完成比完美重要。",
+        "食堂的饭有时不好吃，但转角那家店的豆浆很甜。生活总有小确幸。",
+        "一个人去图书馆并不孤单，那是你在为自己的世界添砖加瓦。",
+        "对专业迷茫很正常，多去蹭两节感兴趣的课，答案会慢慢浮现。"
+      ],
+      relationship: [
+        "友谊需要呼吸，有些朋友走得慢一点，不代表不珍贵。",
+        "如果一段关系让你总在自我怀疑，请像保护小花一样保护自己的感受。",
+        "学会温柔地说‘不’，是成年人重要的边界练习。",
+        "独处时和自己好好相处，那也是关系的一种。",
+        "真正在意你的人，会愿意听你解释那些没说出口的情绪。",
+        "偶尔的孤独是心灵在打扫房间，清空后才能装进更好的相遇。"
+      ],
+      others: [
+        "无论什么样的心事，说出来就已经勇敢了一大半。",
+        "此刻的你或许像一团揉皱的纸，但每道褶皱里都藏着故事，摊开它，风会抚平。",
+        "觉得自己不够好？可是你已经在想办法变好了，这本身就很了不起。",
+        "今天的不开心就止于此吧，明天依旧光芒万丈呀。",
+        "你觉得自己普通，但世界上只有一个你，这就是奇迹。",
+        "如果太累了，就把‘我必须要’换成‘我可以选择’，压力会小很多。"
+      ]
+    };
+
+    // DOM元素
+    const categorySelect = document.getElementById('categorySelect');
+    const confessionInput = document.getElementById('confessionInput');
+    const submitBtn = document.getElementById('submitBtn');
+    const responseCard = document.getElementById('responseCard');
+    const responseMessage = document.getElementById('responseMessage');
+    const glimmerList = document.getElementById('glimmerList');
+    const listenCountSpan = document.getElementById('listenCount');
+    const undoLink = document.getElementById('undoLink');
+    const cardBtn = document.getElementById('cardBtn');
+    const closeResponseBtn = document.getElementById('closeResponseBtn');
+    const cardPreview = document.getElementById('cardPreview');
+    const cardTextDiv = document.getElementById('cardText');
+
+    // 数据
+    let glimmers = [];
+    let listenCount = 0;
+    let lastReplyText = ''; // 用于卡片生成
+
+    // 加载存储
+    try {
+      const stored = localStorage.getItem('treehole_glimmers_v2');
+      if (stored) glimmers = JSON.parse(stored);
+      const storedCount = localStorage.getItem('treehole_listen_count');
+      if (storedCount) listenCount = parseInt(storedCount, 10);
+    } catch (e) {}
+
+    // 更新倾听计数显示
+    listenCountSpan.textContent = listenCount;
+
+    // 渲染微光墙
+    function renderGlimmerWall() {
+      if (glimmers.length === 0) {
+        glimmerList.innerHTML = '<div class="empty-note">暂时还没有微光，来做第一束光吧。</div>';
+        return;
+      }
+      let html = '';
+      // 倒序显示
+      [...glimmers].reverse().forEach((item, idx) => {
+        const realIndex = glimmers.length - 1 - idx; // 原始索引用于点亮操作
+        const lit = item.starred ? 'lit' : '';
+        html += `
+          <div class="glimmer-item" data-index="${realIndex}">
+            <div class="glimmer-header">
+              <span class="category-badge">${getCategoryName(item.category)}</span>
+              <button class="star-btn ${lit}" onclick="toggleStar(${realIndex})">★</button>
+            </div>
+            <div>${escapeHtml(item.confession)}</div>
+          </div>
+        `;
+      });
+      glimmerList.innerHTML = html;
+    }
+
+    function saveData() {
+      try {
+        localStorage.setItem('treehole_glimmers_v2', JSON.stringify(glimmers));
+        localStorage.setItem('treehole_listen_count', listenCount);
+      } catch (e) {}
+    }
+
+    function getCategoryName(cat) {
+      const map = {
+        employment: '就业',
+        furtherstudy: '升学',
+        campus: '校园',
+        relationship: '人际',
+        others: '其他'
+      };
+      return map[cat] || '心事';
+    }
+
+    function escapeHtml(text) {
+      return String(text)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+    }
+
+    function getRandomAnswer(category) {
+      const pool = answers[category] || answers.others;
+      return pool[Math.floor(Math.random() * pool.length)];
+    }
+
+    // 打字机效果
+    function typeWriter(text, element, speed = 60) {
+      element.textContent = '';
+      let i = 0;
+      function type() {
+        if (i < text.length) {
+          element.textContent += text.charAt(i);
+          i++;
+          setTimeout(type, speed);
+        }
+      }
+      type();
+    }
+
+    // 生成心情卡片
+    async function generateCard() {
+      if (!lastReplyText) return;
+      cardTextDiv.textContent = lastReplyText;
+      const canvasElement = document.getElementById('cardCanvas');
+      try {
+        const canvas = await html2canvas(canvasElement, {
+          scale: 2,
+          backgroundColor: '#fffaf2',
+          allowTaint: false,
+          useCORS: true
+        });
+        const imgData = canvas.toDataURL('image/png');
+        cardPreview.innerHTML = `<p style="font-size:13px;color:#8e7a7a;">长按下方卡片保存或截图分享👇</p><img src="${imgData}" alt="心情卡片"/>`;
+        cardPreview.style.display = 'block';
+      } catch (err) {
+        alert('生成卡片失败，但你可以截图页面保存哦~');
+      }
+    }
+
+    // 处理投递
+    function handleSubmit() {
+      const category = categorySelect.value;
+      const confession = confessionInput.value.trim();
+      if (!confession) {
+        alert('在树洞前，哪怕只写一句话也可以哦 🌱');
+        return;
+      }
+
+      const answer = getRandomAnswer(category);
+      lastReplyText = answer;
+
+      // 显示回复卡片，并打字机输出
+      responseCard.style.display = 'block';
+      typeWriter(answer, responseMessage, 55);
+
+      // 添加到微光墙
+      glimmers.push({
+        category: category,
+        confession: confession,
+        starred: false
+      });
+      listenCount++;
+      listenCountSpan.textContent = listenCount;
+      renderGlimmerWall();
+      saveData();
+
+      // 显示撤销按钮
+      undoLink.style.display = 'block';
+
+      // 清空输入
+      confessionInput.value = '';
+
+      // 滚动到回复
+      responseCard.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+
+      // 简单音效反馈（可选）
+      try {
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        const oscillator = audioCtx.createOscillator();
+        const gainNode = audioCtx.createGain();
+        oscillator.connect(gainNode);
+        gainNode.connect(audioCtx.destination);
+        oscillator.type = 'sine';
+        oscillator.frequency.setValueAtTime(880, audioCtx.currentTime);
+        gainNode.gain.setValueAtTime(0.1, audioCtx.currentTime);
+        gainNode.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 0.3);
+        oscillator.start(audioCtx.currentTime);
+        oscillator.stop(audioCtx.currentTime + 0.3);
+      } catch (e) {}
+    }
+
+    // 点亮星星
+    window.toggleStar = function(index) {
+      if (index >= 0 && index < glimmers.length) {
+        glimmers[index].starred = !glimmers[index].starred;
+        saveData();
+        renderGlimmerWall();
+      }
+    };
+
+    // 撤销最后一次投递
+    function undoLast() {
+      if (glimmers.length === 0) return;
+      glimmers.pop();
+      listenCount = Math.max(0, listenCount - 1);
+      listenCountSpan.textContent = listenCount;
+      saveData();
+      renderGlimmerWall();
+      undoLink.style.display = 'none';
+      responseCard.style.display = 'none';
+      cardPreview.style.display = 'none';
+      lastReplyText = '';
+    }
+
+    // 事件绑定
+    submitBtn.addEventListener('click', handleSubmit);
+    confessionInput.addEventListener('keydown', function(e) {
+      if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+        handleSubmit();
+      }
+    });
+
+    undoLink.addEventListener('click', undoLast);
+    closeResponseBtn.addEventListener('click', function() {
+      responseCard.style.display = 'none';
+      cardPreview.style.display = 'none';
+    });
+    cardBtn.addEventListener('click', generateCard);
+
+    // 初始渲染
+    renderGlimmerWall();
+    if (glimmers.length > 0) undoLink.style.display = 'block';
+  })();
+</script>
+</body>
+</html>
